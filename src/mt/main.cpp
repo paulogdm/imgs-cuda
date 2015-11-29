@@ -29,6 +29,36 @@ void writeImage(const char *name, Image *out){
 		out->writeFile(name);
 }
 
+
+void smoothImage(Image *out, Image *in, int in_start, int in_end){
+
+	int pixelSize = in->getPixelSize();
+	unsigned char* pixel_array = out->getData();
+		
+	#pragma omp parallel
+	{
+		unsigned char *buffer = (unsigned char*) calloc(pixelSize, sizeof(unsigned char));
+		int index;
+
+		#pragma omp for
+		for (int i = in_start; i < in_end; i++){
+				
+			for (int j = 0; j < in->getCols(); j++){
+
+				getAverage(in, i, j, buffer);
+				index = getIndex(i-in_start, j, in->getCols(), pixelSize);
+				
+				for(int c=0; c < pixelSize; c++){
+					pixel_array[c + index] = buffer[c];
+				}			
+			}
+		}
+	
+		free(buffer); //liberando buffer
+	}
+}
+
+
 /**
  * Envia para todos os nos o pedacos de dados
  * @param image      imagem para dados

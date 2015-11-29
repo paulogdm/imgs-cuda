@@ -6,14 +6,19 @@
 
 #include "smooth.h"
 
+
+CUDA_CALL
 int getLineSize(int cols, int pixel_size){
 	return pixel_size*cols*sizeof(unsigned char);
 }
 
+CUDA_CALL
 int getIndex(int line, int col, int col_size, int pixel_size){
 	return ((line*col_size*pixel_size) + col*pixel_size)*sizeof(unsigned char);
 }
 
+
+CUDA_CALL
 void getAverage(Image* img, int x, int y, unsigned char* result){
 
 	int counter=0;

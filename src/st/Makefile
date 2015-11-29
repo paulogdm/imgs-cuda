@@ -3,7 +3,7 @@
 CC=g++
 
 INCLUDE_DIR=../include/
-FLAGS=-lm -Wall -I$(INCLUDE_DIR) -fopenmp
+FLAGS=-lm -Wall -I$(INCLUDE_DIR)
 
 
 #File sources

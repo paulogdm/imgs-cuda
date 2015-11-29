@@ -21,18 +21,20 @@ void writeImage(const char *name, Image *out){
 		out->writeFile(name);
 }
 
-void smoothImage(Image *out, Image *in){
+__device__ void smoothImage(Image *out, Image *in){
 
 	int pixelSize = in->getPixelSize();
 	unsigned char *buffer = (unsigned char*) calloc(pixelSize, sizeof(unsigned char));
 	unsigned char *pixel_array = out->getData();
-	int index;
 
-	for (int i = 0; i < in->getRows(); i++){
-		for (int j = 0; j < in->getCols(); j++){
+	int row_limit = in->getRows();
+	int col_limit = in->getCols();
+
+	for (int row = blockIdx.x; row < in->getRows(); row+=gridDim.x){
+		for (int col = threadIdx.x; col <= in->getCols(); col+=blockDim.x){
 
 			getAverage(in, i, j, buffer);
-			index = getIndex(i, j, in->getCols(), pixelSize);
+			int index = getIndex(i, j, in->getCols(), pixelSize);
 
 			for(int c = 0; c < pixelSize; c++){
 				pixel_array[c + index] = buffer[c];
@@ -56,8 +58,8 @@ int main(int argc, const char **argv){
 	in = readImage(argv[1]);
 
 	out = in->partialClone();
-	
-	smoothImage(out, in);
+
+	smoothImageCUDA(out, in);
 
 	writeImage(argv[2], out);
 
