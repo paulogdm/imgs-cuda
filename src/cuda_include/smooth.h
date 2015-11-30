@@ -6,16 +6,18 @@
 
 
 #ifdef __CUDACC__
-#define CUDA_CALL __host__ __device__
+#define SMOOTH_CALL_LEVEL	__device__
 #else
-#define CUDA_CALL
+#define SMOOTH_CALL_LEVEL
 #endif
 
-CUDA_CALL
+SMOOTH_CALL_LEVEL
 int getLineSize(int cols, int pixel_size);
-CUDA_CALL
+
+SMOOTH_CALL_LEVEL
 int getIndex(int line, int col, int col_size, int pixel_size);
-CUDA_CALL
-void getAverage(unsigned char* pixel_array, int x, int y, unsigned char* result, int col_limit, int row_limit, int pixel_size);
+
+SMOOTH_CALL_LEVEL
+void getAverage(unsigned char* img, int x, int y, unsigned char* result, int pixel_size, int col_limit, int row_limit);
 
 #endif

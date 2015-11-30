@@ -7,7 +7,7 @@
 
 #include <mpi.h>
 
-#define WRITE_IMG_OUT 	1
+#define WRITE_IMAGE_OUT		false
 
 //openmpi defines
 #define FIRST_TAG	10	//primeira bateria de troca de mensagens
@@ -194,6 +194,12 @@ int main(int argc, const char **argv){
 	//ROOT calcula parametros iniciais
 	if(my_rank == 0){
 		in = readImage(argv[1]);
+		
+		if(in->getData() == NULL){
+			printf("File does not seem to exist\n");
+			return 1;
+		}
+
 		out = in->partialClone();
 		
 		type = getImageType(argv[1]);
@@ -229,7 +235,7 @@ int main(int argc, const char **argv){
 		sendChunk(out);
 	} else {
 		receiveChunks(out, n_process, chunk_size);
-		if(WRITE_IMG_OUT)
+		if(WRITE_IMAGE_OUT)
 			writeImage(argv[2], out);
 	}
 

@@ -20,8 +20,6 @@ protected:
 	void dataAlloc();
 	void dataFree();
 	
-
-	
 public:
 	Image();
 	Image(int rows, int cols);

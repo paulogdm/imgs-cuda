@@ -4,6 +4,8 @@
 #include <image.h>
 #include <smooth.h>
 
+#define WRITE_IMAGE_OUT		false
+
 Image* readImage(const char *name){
 
 	Image *buffer = NULL;
@@ -55,11 +57,16 @@ int main(int argc, const char **argv){
 
 	in = readImage(argv[1]);
 
+	if(in->getData() == NULL){
+		printf("File does not seem to exist\n");
+		return 1;
+	}
+
 	out = in->partialClone();
 	
 	smoothImage(out, in);
-
-	writeImage(argv[2], out);
+	if(WRITE_IMAGE_OUT)
+		writeImage(argv[2], out);
 
 	delete in;
 	delete out;

@@ -3,8 +3,8 @@
 CC=g++
 CUDA_CC=nvcc
 INCLUDE_DIR=../cuda_include/
-FLAGS=-I$(INCLUDE_DIR) -L/usr/local/cuda/lib64 -lcuda -lcudart
-
+FLAGS=-I$(INCLUDE_DIR)
+NVIDIA_FLAGS=-L/usr/local/cuda/lib64 -lcuda -lcudart -rdc=true
 
 #File sources
 SOURCES= $(wildcard $(INCLUDE_DIR)*.cu) $(wildcard *.cu)
@@ -17,13 +17,13 @@ TARGET=$(TARGET_DIR)main_cuda
 all: $(TARGET)
 #	
 $(TARGET): $(OBJECTS)
-	$(CUDA_CC) -o $@ $^ $(FLAGS)
+	$(CUDA_CC) -o $@ $^ $(FLAGS) $(NVIDIA_FLAGS)
 
 %.o: %.cu %.h
-	$(CUDA_CC) $(FLAGS) -c $< -o $@
+	$(CUDA_CC) $(FLAGS) -c $< -o $@ $(NVIDIA_FLAGS)
 
 %.o: %.cu
-	$(CUDA_CC) $(FLAGS) -c $< -o $@
+	$(CUDA_CC) $(FLAGS) -c $< -o $@ $(NVIDIA_FLAGS)
 
 #clean .o and main
 clean:

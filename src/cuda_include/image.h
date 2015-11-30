@@ -1,18 +1,19 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-#ifdef __CUDACC__
-#define CUDA_CALL	__host__ __device__
-#else
-#define CUDA_CALL
-#endif 
-
 #define UNK_TYPE	0
 #define GRAY_TYPE 	1	
 #define RGB_TYPE	2
 
 #define GRAY_EXT 	".pgm"
 #define RGB_EXT 	".ppm"
+
+#ifdef __CUDACC__
+#define IMAGE_CALL_LEVEL __host__
+#else
+#define SMOOTH_CALL_LEVEL
+#endif
+
 
 class Image{
 private:
@@ -21,55 +22,55 @@ private:
 	
 
 protected:
-	__host__
+	IMAGE_CALL_LEVEL
 	void dataAlloc();
 	
-	__host__
+	IMAGE_CALL_LEVEL
 	void dataFree();
 	
 
 public:
 	int rows, cols;
 	
-	__host__
+	IMAGE_CALL_LEVEL
 	Image();
 
-	__host__
+	IMAGE_CALL_LEVEL
 	Image(int rows, int cols);
 
-	__host__
+	IMAGE_CALL_LEVEL
 	virtual ~Image();
 
-	CUDA_CALL
+	IMAGE_CALL_LEVEL
 	int getRows();
-	CUDA_CALL
+	IMAGE_CALL_LEVEL
 	int getRowsSize(int n_rows);
 
-	CUDA_CALL
+	IMAGE_CALL_LEVEL
 	int getCols();
 
-	__host__
+	IMAGE_CALL_LEVEL
 	void readFile(const char *name);
 
-	__host__
+	IMAGE_CALL_LEVEL
 	void writeFile(const char *name);
 
-	CUDA_CALL
+	IMAGE_CALL_LEVEL
 	unsigned char* getData();
 
-	CUDA_CALL
+	IMAGE_CALL_LEVEL
 	unsigned char* getData(int line_start);
 
-	__host__
+	IMAGE_CALL_LEVEL
 	void setType(char *type);
 
-	__host__
+	IMAGE_CALL_LEVEL
 	char* getType();
 	
-	CUDA_CALL
+	IMAGE_CALL_LEVEL
 	virtual int getPixelSize();
 
-	__host__
+	IMAGE_CALL_LEVEL
 	virtual Image *partialClone();
 
 };
@@ -83,7 +84,7 @@ public:
 
 	~grayImage();
 	
-	CUDA_CALL
+	IMAGE_CALL_LEVEL
 	int getPixelSize();
 	
 
@@ -102,23 +103,23 @@ public:
 
 	~rgbImage();
 	
-	CUDA_CALL
+	IMAGE_CALL_LEVEL
 	int getPixelSize();
 
-	__host__
+	IMAGE_CALL_LEVEL
 	virtual rgbImage *partialClone();
 };
 
-__host__
+IMAGE_CALL_LEVEL
 int getImageType(const char *name);
 
-__host__
+IMAGE_CALL_LEVEL
 Image* createImage(int type);
 
-__host__
+IMAGE_CALL_LEVEL
 Image* createImage(const char *name);
 
-__host__
+IMAGE_CALL_LEVEL
 Image* createImage(int type, int rows, int cols);
 
 #endif
