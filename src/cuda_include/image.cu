@@ -4,6 +4,7 @@
 #include <cstring>
 
 #include <cuda.h>
+#include <cuda_runtime.h>
 
 void Image::dataAlloc(){
 

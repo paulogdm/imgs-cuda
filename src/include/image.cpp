@@ -3,7 +3,6 @@
 #include <cstdio>
 #include <cstring>
 
-IMAGE_CALL_LEVEL
 void Image::dataAlloc(){
 	if(this->cols < 1 || this->rows < 1){
 		this->data = NULL;
@@ -12,17 +11,14 @@ void Image::dataAlloc(){
 	}
 }
 
-IMAGE_CALL_LEVEL
 void Image::dataFree(){
 	free(this->data);
 }
 
-IMAGE_CALL_LEVEL
 Image::Image(){
 	Image(0,0);
 }
 
-IMAGE_CALL_LEVEL
 Image::Image(int rows, int cols){
 
 	this->rows = rows;
@@ -30,28 +26,23 @@ Image::Image(int rows, int cols){
 	this->data = NULL;
 }
 
-IMAGE_CALL_LEVEL
 Image::~Image(){
 	if(this->data != NULL)
 		free(this->data);
 }
 
-IMAGE_CALL_LEVEL
 int Image::getRows(){
 	return this->rows;
 }
 
-IMAGE_CALL_LEVEL
 int Image::getRowsSize(int n_rows){
 	return this->getPixelSize()*(this->cols)*(n_rows);
 }
 
-IMAGE_CALL_LEVEL
 int Image::getCols(){
 	return this->cols;
 }
 
-IMAGE_CALL_LEVEL
 void Image::readFile(const char *name){
 	FILE *file;
 	char type[3] = "";
@@ -92,7 +83,6 @@ void Image::readFile(const char *name){
 	fread(this->data, sizeof(unsigned char), total_size,file);
 }
 
-IMAGE_CALL_LEVEL
 void Image::writeFile(const char *name){
 	
 	FILE *file;
@@ -110,35 +100,29 @@ void Image::writeFile(const char *name){
 	fwrite(this->data, sizeof(unsigned char), total_size, file);
 }
 
-IMAGE_CALL_LEVEL
 unsigned char* Image::getData(){
 	return this->data;
 }
 
-IMAGE_CALL_LEVEL
 unsigned char* Image::getData(int line_start){
 	if(line_start < this->getRows())
 		return(this->data + (this->getPixelSize()*this->getCols())*line_start*sizeof(unsigned char));
 	return NULL;
 }
 
-IMAGE_CALL_LEVEL
 int Image::getPixelSize(){
 	return 0;
 }
 
-IMAGE_CALL_LEVEL
 Image* Image::partialClone(){
 	Image* copy = new Image(this->getRows(), this->getRows());
 	return copy;
 }
 
-IMAGE_CALL_LEVEL
 void Image::setType(char *type){
 	strcpy(this->type, type);
 }
 
-IMAGE_CALL_LEVEL
 char* Image::getType(){
 	return this->type;
 }
@@ -146,27 +130,22 @@ char* Image::getType(){
 ////////////////
 ///GRAY IMAGE //
 ////////////////
-IMAGE_CALL_LEVEL
 grayImage::grayImage():
 Image(){}
 
-IMAGE_CALL_LEVEL
 grayImage::grayImage(int rows, int columns):
 Image(rows, columns){
 	this->dataAlloc();
 }
 
-IMAGE_CALL_LEVEL
 grayImage::~grayImage(){
 
 }
 
-IMAGE_CALL_LEVEL
 int grayImage::getPixelSize(){
 	return sizeof(unsigned char);
 }
 
-IMAGE_CALL_LEVEL
 grayImage* grayImage::partialClone(){
 	grayImage* copy = new grayImage(this->getRows(), this->getCols());
 
@@ -178,27 +157,22 @@ grayImage* grayImage::partialClone(){
 ///////////////
 ///RGB IMAGE //
 ///////////////
-IMAGE_CALL_LEVEL
 rgbImage::rgbImage():
 Image(){}
 	
-IMAGE_CALL_LEVEL
 rgbImage::rgbImage(int rows, int columns):
 Image(rows, columns){
 	this->dataAlloc();
 }
 
-IMAGE_CALL_LEVEL
 rgbImage::~rgbImage(){
 
 }
 	
-IMAGE_CALL_LEVEL
 int rgbImage::getPixelSize(){
 	return 3*sizeof(unsigned char);
 }
 
-IMAGE_CALL_LEVEL
 rgbImage* rgbImage::partialClone(){	
 	rgbImage* copy = new rgbImage(this->getRows(), this->getCols());
 	
@@ -210,7 +184,6 @@ rgbImage* rgbImage::partialClone(){
 ///////////////////////
 ///SUPPORT FUNCTIONS //
 ///////////////////////
-IMAGE_CALL_LEVEL
 int getImageType(const char *name){
 
 	if(memcmp(GRAY_EXT, name + strlen(name)-4, 4*sizeof(char)) == 0){
@@ -222,7 +195,6 @@ int getImageType(const char *name){
 	return UNK_TYPE;
 }
 
-IMAGE_CALL_LEVEL
 Image* createImage(int type){
 	Image *buffer = NULL;
 	
@@ -235,7 +207,6 @@ Image* createImage(int type){
 	return buffer;
 }
 
-IMAGE_CALL_LEVEL
 Image* createImage(int type, int rows, int cols){
 	Image *buffer = NULL;
 	
@@ -248,7 +219,6 @@ Image* createImage(int type, int rows, int cols){
 	return buffer;
 }
 
-IMAGE_CALL_LEVEL
 Image* createImage(const char *name){
 	return createImage(getImageType(name));
 }

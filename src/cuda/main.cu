@@ -9,6 +9,9 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
+
+#define EXEC_N_TIMES	10
+
 //flag para escrever a saida ou nao
 #define WRITE_IMAGE_OUT		!false
 
@@ -88,60 +91,56 @@ int main(int argc, const char **argv){
 	if(in->getData() == NULL){
 		printf("File does not seem to exist\n");
 	}
+	
+	//out recebe dimensoes e aloca espaco
+	out = in->partialClone();
+	rows = in->getRows();
+	cols = in->getCols();
 
 	//inicializando tempos
 	cudaEventCreate(&evnt1);
 	cudaEventCreate(&evnt2);
 	cudaEventCreate(&evnt3);
 	cudaEventCreate(&evnt4);
-	
-	//out recebe dimensoes e aloca espaco
-	out = in->partialClone();
-	
-	//comeca o tempo
-
-	//sincroniza HOST e DEVICE
-	
-	rows = in->getRows();
-	cols = in->getCols();
+		
 	dim3 threadsPerBlock(32, 32);
 	dim3 numBlocks(ceil((float)rows/threadsPerBlock.x),
 					ceil((float)cols/threadsPerBlock.y));
 	
+	for(int	n_exec = 0; n_exec < EXEC_N_TIMES; n_exec++){
 
-	//Kernel
-	
-	cudaEventRecord(evnt1);
-	cudaDeviceSynchronize();
+		cudaEventRecord(evnt1);
+		cudaDeviceSynchronize();
 
-	cudaEventRecord(evnt2);
-	smoothImageCUDA<<< numBlocks, threadsPerBlock>>>(out->getData(), in->getData(), in->getPixelSize(), cols, rows);
+		cudaEventRecord(evnt2);
+		smoothImageCUDA<<< numBlocks, threadsPerBlock>>>(out->getData(), in->getData(), in->getPixelSize(), cols, rows);
 
-	cudaEventRecord(evnt3);
-	cudaDeviceSynchronize();
-	cudaEventRecord(evnt4);
-	
-	cudaEventSynchronize(evnt3);
-	cudaEventSynchronize(evnt4);
-	
-	float kernel_time = 0;
-	float memory_time_in = 0;
-	float memory_time_out = 0;
+		cudaEventRecord(evnt3);
+		cudaDeviceSynchronize();
+		cudaEventRecord(evnt4);
+		
+		cudaEventSynchronize(evnt3);
+		cudaEventSynchronize(evnt4);
+		
+		float kernel_time = 0;
+		float memory_time_in = 0;
+		float memory_time_out = 0;
 
-	cudaEventElapsedTime(&kernel_time, evnt2, evnt3);
-	cudaEventElapsedTime(&memory_time_in, evnt1, evnt2);
-	cudaEventElapsedTime(&memory_time_out, evnt3, evnt4);
+		cudaEventElapsedTime(&kernel_time, evnt2, evnt3);
+		cudaEventElapsedTime(&memory_time_in, evnt1, evnt2);
+		cudaEventElapsedTime(&memory_time_out, evnt3, evnt4);
+
+		printf("Image: %s\n", argv[1]);
+		printf("Kernel: %.4fms\n", kernel_time);
+		printf("Memory in: %.4fms\n", memory_time_in);
+		printf("Memory out: %.4fms\n", memory_time_out);
+		printf("Total (K+M): %.4fms\n", kernel_time+memory_time_out+memory_time_in);
+		printf("\n");
+
+	}
 
 	if(WRITE_IMAGE_OUT)
 		writeImage(argv[2], out);
-
-	printf("\n");
-	printf("Image: %s\n", argv[1]);
-	printf("Kernel: %.4fms\n", kernel_time);
-	printf("Memory in: %.4fms\n", memory_time_in);
-	printf("Memory out: %.4fms\n", memory_time_out);
-	printf("Total (K+M): %.4fms\n", kernel_time+memory_time_out+memory_time_in);
-	printf("\n");
 
 	delete in;
 	delete out;

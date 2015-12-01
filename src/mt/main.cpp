@@ -7,6 +7,8 @@
 
 #include <mpi.h>
 
+#define EXEC_N_TIMES	10
+
 #define WRITE_IMAGE_OUT		false
 
 //openmpi defines

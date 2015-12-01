@@ -3,8 +3,13 @@
 #include <cstring>
 #include <image.h>
 #include <smooth.h>
+#include <time.h>
 
 #define WRITE_IMAGE_OUT		false
+
+#define EXEC_N_TIMES		10
+
+
 
 Image* readImage(const char *name){
 
@@ -49,6 +54,7 @@ int main(int argc, const char **argv){
 
 	Image *in;
 	Image *out;
+	clock_t start, end;
 
 	if(argc != 3){
 		printf("Usage: %s <IMAGE_IN> <IMAGE_OUT>\n", argv[0]);
@@ -63,8 +69,17 @@ int main(int argc, const char **argv){
 	}
 
 	out = in->partialClone();
-	
+	for(int n_exec = 0; n_exec < EXEC_N_TIMES; n_exec++){
+
+	start = clock();
 	smoothImage(out, in);
+	end = clock();
+
+		printf("Image: %s\n", argv[1]);
+		printf("Smooth time: %.4lf\n", ((double) (end - start))/CLOCKS_PER_SEC);
+		printf("\n")
+	}
+
 	if(WRITE_IMAGE_OUT)
 		writeImage(argv[2], out);
 

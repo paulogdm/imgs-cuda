@@ -36,17 +36,16 @@ fi
 
 echo "*************************"
 echo "*** Execution Started ***"
-echo "[!!!] RUNNING $N_EXEC TIMES"
-echo "[!!!] RUNNING WITH $N_PROCESS PROCESS"
+echo "[!!!] RUNNING MPI WITH $N_PROCESS PROCESS"
 echo ""
 for main in ${bin[@]}; do
 	for image in ${fname[@]}; do
 		echo "Running ${bold} $(basename "$main") ${normal} with ${bold} $(basename "$image") ${normal}"
 			for (( i=0; i < N_EXEC; i++ )); do
 				if [[ $(basename "$main") == "$main_mt" ]]; then
-					mpirun -n $N_PROCESS --bind-to none $main $image out/$(basename "$main")_$(basename "$image")
+					mpirun -n $N_PROCESS --bind-to none $main $image ./out/$(basename "$main")_$(basename "$image") >> ./out/$(basename "$main").time
 				else
-					./$main $image out/$(basename "$main")_$(basename "$image")
+					./$main $image ./out/$(basename "$main")_$(basename "$image") >> ./out/$(basename "$main").time
 				fi
 		done
 		echo "Done!"
