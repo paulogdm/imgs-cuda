@@ -21,7 +21,6 @@ void getAverage(unsigned char* pixel_array, int x, int y, unsigned char* result,
 
 	int counter=0;
 	int color[3]={0,0,0};
-	int index;
 
 	for(int i = x - __STEP__; i <= x + __STEP__; i++){
 		for(int j = y - __STEP__; j <= y + __STEP__; j++){
@@ -30,7 +29,7 @@ void getAverage(unsigned char* pixel_array, int x, int y, unsigned char* result,
 				//se algo precisa ser feito em caso de ultrapassar margens
 			} else {
 				counter++; //quantos pixels fazem parte da media
-				index = getIndex(i, j, col_limit, pixel_size);
+				int index = getIndex(i, j, col_limit, pixel_size);
 
 				for(int c = 0; c < pixel_size; c++){
 					color[c] += pixel_array[index+c];
@@ -39,6 +38,7 @@ void getAverage(unsigned char* pixel_array, int x, int y, unsigned char* result,
 		}
 	}
 	
+	#pragma unroll
 	for(int i = 0; i < pixel_size; i++){
 		result[i] = (color[i] / counter);
 	}

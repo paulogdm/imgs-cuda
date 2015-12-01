@@ -49,14 +49,15 @@ void writeImage(const char *name, Image *out){
  */
 __global__ void smoothImageCUDA(unsigned char *out, unsigned char *in, int pixel_size, int col_limit, int row_limit){
 
-	unsigned char buffer[3]={0,0,0};
 	int col = blockIdx.y * blockDim.y + threadIdx.x;
 	int row = blockIdx.x * blockDim.x + threadIdx.y;
-
+	unsigned char buffer[3]={0,0,0};
 
 	if(row < row_limit && col < col_limit){
 		getAverage(in, row, col, buffer, pixel_size, col_limit, row_limit);
 		int index = getIndex(row, col, col_limit, pixel_size);
+
+		#pragma unroll
 		for(int c = 0; c < pixel_size; c++){
 			out[c + index] = buffer[c];
 		}
@@ -96,21 +97,20 @@ int main(int argc, const char **argv){
 	out = in->partialClone();
 	
 	//comeca o tempo
-	cudaEventRecord(start);
 
 	//sincroniza HOST e DEVICE
-	cudaDeviceSynchronize();
 	
 	rows = in->getRows();
 	cols = in->getCols();
-	
 	dim3 threadsPerBlock(32, 32);
-
-	dim3 numBlocks(cols/threadsPerBlock.x + cols%threadsPerBlock.x, 
-					rows/threadsPerBlock.y + rows%threadsPerBlock.y); 
+	dim3 numBlocks(ceil((float)rows/threadsPerBlock.x),
+					ceil((float)cols/threadsPerBlock.y));
+	
 
 	//Kernel
-	smoothImageCUDA<<< numBlocks, threadsPerBlock >>>(out->getData(), in->getData(), in->getPixelSize(), cols, rows);
+	cudaEventRecord(start);
+	cudaDeviceSynchronize();
+	smoothImageCUDA<<< numBlocks, threadsPerBlock, 4>>>(out->getData(), in->getData(), in->getPixelSize(), cols, rows);
 	cudaDeviceSynchronize();
 	
 	//contabiliza o stop
@@ -123,7 +123,9 @@ int main(int argc, const char **argv){
 	if(WRITE_IMAGE_OUT)
 		writeImage(argv[2], out);
 
-	printf("Time: %.4f\n", milliseconds);
+	printf("Time: %.4fms", milliseconds);
+	printf(" == ");
+	printf("Time: %.4fs\n", milliseconds/1000);
 
 	delete in;
 	delete out;
