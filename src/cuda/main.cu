@@ -10,7 +10,7 @@
 #include <cuda_runtime.h>
 
 //flag para escrever a saida ou nao
-#define WRITE_IMAGE_OUT		false
+#define WRITE_IMAGE_OUT		!false
 
 /**
  * Funcao que apenas auxiliar a leitura da imagem
@@ -50,16 +50,15 @@ void writeImage(const char *name, Image *out){
 __global__ void smoothImageCUDA(unsigned char *out, unsigned char *in, int pixel_size, int col_limit, int row_limit){
 
 	unsigned char buffer[3]={0,0,0};
+	int col = blockIdx.y * blockDim.y + threadIdx.x;
+	int row = blockIdx.x * blockDim.x + threadIdx.y;
 
-	for (int row = blockIdx.x; row < row_limit; row+=gridDim.x){
-		for (int col = threadIdx.x; col <= col_limit; col+=blockDim.x){
 
-			getAverage(in, row, col, buffer, pixel_size, col_limit, row_limit);
-			int index = getIndex(row, col, col_limit, pixel_size);
-
-			for(int c = 0; c < pixel_size; c++){
-				out[c + index] = buffer[c];
-			}			
+	if(row < row_limit && col < col_limit){
+		getAverage(in, row, col, buffer, pixel_size, col_limit, row_limit);
+		int index = getIndex(row, col, col_limit, pixel_size);
+		for(int c = 0; c < pixel_size; c++){
+			out[c + index] = buffer[c];
 		}
 	}
 }
@@ -105,8 +104,13 @@ int main(int argc, const char **argv){
 	rows = in->getRows();
 	cols = in->getCols();
 	
+	dim3 threadsPerBlock(32, 32);
+
+	dim3 numBlocks(cols/threadsPerBlock.x + cols%threadsPerBlock.x, 
+					rows/threadsPerBlock.y + rows%threadsPerBlock.y); 
+
 	//Kernel
-	smoothImageCUDA<<< rows, cols >>>(out->getData(), in->getData(), in->getPixelSize(), cols, rows);
+	smoothImageCUDA<<< numBlocks, threadsPerBlock >>>(out->getData(), in->getData(), in->getPixelSize(), cols, rows);
 	cudaDeviceSynchronize();
 	
 	//contabiliza o stop
