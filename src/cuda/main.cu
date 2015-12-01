@@ -51,9 +51,9 @@ __global__ void smoothImageCUDA(unsigned char *out, unsigned char *in, int pixel
 
 	int col = blockIdx.y * blockDim.y + threadIdx.x;
 	int row = blockIdx.x * blockDim.x + threadIdx.y;
-	unsigned char buffer[3]={0,0,0};
 
 	if(row < row_limit && col < col_limit){
+		unsigned char buffer[3]={0,0,0};
 		getAverage(in, row, col, buffer, pixel_size, col_limit, row_limit);
 		int index = getIndex(row, col, col_limit, pixel_size);
 
@@ -74,7 +74,7 @@ int main(int argc, const char **argv){
 	Image *out;
 	int rows; //linhas
 	int cols; //colunas
-	cudaEvent_t start, stop; //eventos para tempo
+	cudaEvent_t evnt1, evnt2, evnt3, evnt4; //eventos para tempo
 
 	if(argc != 3){
 		printf("Usage: %s <IMAGE_IN> <IMAGE_OUT>\n", argv[0]);
@@ -90,8 +90,10 @@ int main(int argc, const char **argv){
 	}
 
 	//inicializando tempos
-	cudaEventCreate(&start);
-	cudaEventCreate(&stop);
+	cudaEventCreate(&evnt1);
+	cudaEventCreate(&evnt2);
+	cudaEventCreate(&evnt3);
+	cudaEventCreate(&evnt4);
 	
 	//out recebe dimensoes e aloca espaco
 	out = in->partialClone();
@@ -108,24 +110,38 @@ int main(int argc, const char **argv){
 	
 
 	//Kernel
-	cudaEventRecord(start);
-	cudaDeviceSynchronize();
-	smoothImageCUDA<<< numBlocks, threadsPerBlock, 4>>>(out->getData(), in->getData(), in->getPixelSize(), cols, rows);
-	cudaDeviceSynchronize();
 	
-	//contabiliza o stop
-	cudaEventRecord(stop);
-	cudaEventSynchronize(stop);
+	cudaEventRecord(evnt1);
+	cudaDeviceSynchronize();
+
+	cudaEventRecord(evnt2);
+	smoothImageCUDA<<< numBlocks, threadsPerBlock>>>(out->getData(), in->getData(), in->getPixelSize(), cols, rows);
+
+	cudaEventRecord(evnt3);
+	cudaDeviceSynchronize();
+	cudaEventRecord(evnt4);
 	
-	float milliseconds = 0;
-	cudaEventElapsedTime(&milliseconds, start, stop);
+	cudaEventSynchronize(evnt3);
+	cudaEventSynchronize(evnt4);
+	
+	float kernel_time = 0;
+	float memory_time_in = 0;
+	float memory_time_out = 0;
+
+	cudaEventElapsedTime(&kernel_time, evnt2, evnt3);
+	cudaEventElapsedTime(&memory_time_in, evnt1, evnt2);
+	cudaEventElapsedTime(&memory_time_out, evnt3, evnt4);
 
 	if(WRITE_IMAGE_OUT)
 		writeImage(argv[2], out);
 
-	printf("Time: %.4fms", milliseconds);
-	printf(" == ");
-	printf("Time: %.4fs\n", milliseconds/1000);
+	printf("\n");
+	printf("Image: %s\n", argv[1]);
+	printf("Kernel: %.4fms\n", kernel_time);
+	printf("Memory in: %.4fms\n", memory_time_in);
+	printf("Memory out: %.4fms\n", memory_time_out);
+	printf("Total (K+M): %.4fms\n", kernel_time+memory_time_out+memory_time_in);
+	printf("\n");
 
 	delete in;
 	delete out;
