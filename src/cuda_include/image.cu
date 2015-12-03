@@ -6,25 +6,37 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
+/**
+ * Funcao que aloca a memoria contigua da imagem
+ */
 void Image::dataAlloc(){
 
+	//se coluna ou linha forem 0
 	if(this->cols < 1 || this->rows < 1){
 		this->data = NULL;
-	} else {
+	} else { //se tamanho valido
 		int lenght = (this->getPixelSize()*(this->cols)*(this->rows));
+		//memoria alocada atraves de cuda managed
+		//note que nao sincronizamos o host ou device
 		cudaMallocManaged(&(this->data), lenght);
 	}
-	cudaDeviceSynchronize();
 }
 
+/**
+ * Funcao que libera a memoria
+ */
 void Image::dataFree(){
 	cudaFree(this->data);
 }
 
+//criando imagem vazia
 Image::Image(){
 	Image(0,0);
 }
 
+/**
+ * Construtor principal que recebe linha e coluna
+ */
 Image::Image(int rows, int cols){
 
 	this->rows = rows;
@@ -32,21 +44,36 @@ Image::Image(int rows, int cols){
 	this->data = NULL;
 }
 
+/**
+ * Destrutor que além de dar free no host ou device sincroniza
+ */
 Image::~Image(){
 	if(this->data != NULL)
 		cudaFree(this->data);
 	cudaDeviceSynchronize();
 }
 
+/**
+ * Get de linhas
+ * @return total de linhas
+ */
 int Image::getRows(){
 	return this->rows;
 }
 
-
+/**
+ * get de tamanho das linhas baseado na quantidade de que se deseja
+ * @param  n_rows quantidade de linhas
+ * @return        retorna o tamanho total das n linhas
+ */
 int Image::getRowsSize(int n_rows){
 	return this->getPixelSize()*(this->cols)*(n_rows);
 }
 
+/**
+ * 
+ * @return [description]
+ */
 int Image::getCols(){
 	return this->cols;
 }
