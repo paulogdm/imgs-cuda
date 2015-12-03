@@ -77,7 +77,7 @@ int main(int argc, const char **argv){
 
 		printf("Image: %s\n", argv[1]);
 		printf("Smooth time: %.4lf\n", ((double) (end - start))/CLOCKS_PER_SEC);
-		printf("\n")
+		printf("\n");
 	}
 
 	if(WRITE_IMAGE_OUT)
