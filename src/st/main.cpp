@@ -5,7 +5,7 @@
 #include <smooth.h>
 #include <time.h>
 
-#define WRITE_IMAGE_OUT		false
+#define WRITE_IMAGE_OUT		!false
 
 #define EXEC_N_TIMES		10
 
