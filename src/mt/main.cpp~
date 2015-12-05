@@ -243,8 +243,6 @@ int main(int argc, const char **argv){
 	} else {
 		receiveChunks(out, n_process, chunk_size);
 
-		end = clock();
-
 		printf("Image: %s\n", argv[1]);
 		printf("Smooth time: %.4lf\n", ((double) (end - start))/CLOCKS_PER_SEC);
 		printf("\n");
