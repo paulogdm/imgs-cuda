@@ -2,7 +2,7 @@
 
 ## Sinopse
 	
-##Autores:
+## Autores:
 
 Oscar Lima Neto		oscarneto@usp.br
 Paulo G. De Mitri 	paulo.mitri@usp.br
@@ -22,9 +22,9 @@ O programa retira todas as imagens de um único diretório: `in/`
 Toda a saída é colocada em `out/`
 Os tempos são apresentados com a extensão `.time`
 
-##F.A.Q.
+## F.A.Q.
 
-1) Quero alterar o número de execuções do programa.
+1) Quero alterar o número de execuções do programa...
 É necessário editar o código fonte (main.cpp ou main.cu) e alterar a definição de EXEC_N_TIMES.
 
 2) As imagens não estão sendo gravadas. O que aconteceu?
@@ -32,3 +32,6 @@ OU
 3) Não preciso gerar as imagens, o que faço?
 Existe uma flag em cada um dos arquivos 'main_*' chamada WRITE_IMG_OUT.
 Altere ela para 'false' e o programa não irá gravar imagens. Altere para '!false' e o programa irá gravar imagens
+
+4) Gostaria de otimizar a compição do algorítmo em CUDA para outra placa de vídeo...
+Basta mudar as flags necessárias no Makefile do programa CUDA.
