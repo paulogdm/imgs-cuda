@@ -4,23 +4,39 @@
 	
 ## Autores:
 
-Oscar Lima Neto		oscarneto@usp.br
-Paulo G. De Mitri 	paulo.mitri@usp.br
+    Oscar Lima Neto		oscarneto@usp.br
+    Paulo G. De Mitri 	paulo.mitri@usp.br
 
 
 ## Compilar e executar
 
-Cada código fonte está na sua respectiva pasta em src/
-Portanto para compilar é necessário entrar na pasta desejada e aplicar o comando make
-Exemplo:
-	$ cd src/st/
-	$ make rebuild
+    Cada código fonte está na sua respectiva pasta em `src/`
+    Portanto para compilar é necessário entrar na pasta desejada e aplicar o comando make
+    Exemplo:
+	    $ cd src/st/
+	    $ make rebuild
+    
+    Para executar o script `run.sh` deve ser utilizado.
+    Os seguintes argumentos são permitidos, caso seja necessário especificar uma 
+    imagem ou um programa em específco:
+    1) -fname <NOME DA IMAGEM>
+    2) -bin <NOME DO PROGRAMA>
+    Exemplos:
+        $ ./run.sh -bin main_cuda
+            (executando todas as imagens com o programa em CUDA)
+        
+        $./run.sh -fname CCCP.ppm
+            (executando todos os programas com essa imagem)
+        
+        $./run.sh -bin main_st -fname EVGA.ppm
+        $./run.sh -fname EVGA.ppm -bin main_st
+            (executando a imagem EVGA.ppm com o programa main_st)
 
 ## Entrada e saída
 
-O programa retira todas as imagens de um único diretório: `in/`
-Toda a saída é colocada em `out/`
-Os tempos são apresentados com a extensão `.time`
+    O programa retira todas as imagens de um único diretório: `in/`
+    Toda a saída é colocada em `out/`
+    Os tempos são apresentados com a extensão `.time`
 
 ## F.A.Q.
 
