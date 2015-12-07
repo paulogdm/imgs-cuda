@@ -22,22 +22,22 @@ private:
 	
 
 protected:
+	int rows, cols;
+	
 	IMAGE_CALL_LEVEL
 	void dataAlloc();
 	
 	IMAGE_CALL_LEVEL
 	void dataFree();
-	
 
-public:
-	int rows, cols;
-	
 	IMAGE_CALL_LEVEL
 	Image();
 
 	IMAGE_CALL_LEVEL
 	Image(int rows, int cols);
 
+public:
+	
 	IMAGE_CALL_LEVEL
 	virtual ~Image();
 

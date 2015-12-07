@@ -70,14 +70,14 @@ int Image::getRowsSize(int n_rows){
 	return this->getPixelSize()*(this->cols)*(n_rows);
 }
 
-/**
- * 
- * @return [description]
- */
 int Image::getCols(){
 	return this->cols;
 }
 
+/**
+ * Le um arquivo pgm ou ppm
+ * @param name nome do arquivo
+ */
 void Image::readFile(const char *name){
 	FILE *file;
 	char type[3] = "";
@@ -119,6 +119,10 @@ void Image::readFile(const char *name){
 	fread(this->data, sizeof(unsigned char), total_size,file);
 }
 
+/**
+ * Escreve o arquivo pgm ou ppm
+ * @param name nome do arquivo de saida
+ */
 void Image::writeFile(const char *name){
 	
 	FILE *file;
@@ -136,36 +140,44 @@ void Image::writeFile(const char *name){
 	fwrite(this->data, sizeof(unsigned char), total_size, file);
 }
 
+/**
+ * Ponteiro para dados
+ */
 unsigned char* Image::getData(){
 	return this->data;
 }
 
+/**
+ * Funcao para pegar dados a partir de uma certa linha
+ * @param  line_start linha que comeca
+ * @return            NULL se invalido ou ponteiro para comeco da linha
+ */
 unsigned char* Image::getData(int line_start){
 	if(line_start < this->getRows())
 		return(this->data + (this->getPixelSize()*this->getCols())*line_start*sizeof(unsigned char));
 	return NULL;
 }
-/*
-void setData(unsigned char* data, int size){
-	if(this->data != NULL)
-		this->dataAlloc();
-	memcpy(this->getData(), data, size);
-}
 
-void setData(unsigned char* data, int size, int line){
-	unsigned char *pointer = getData(line);
-	this->setData(data, size);
-}*/
-
+/**
+ * 1 se PGM 3 se PPM
+ */
 int Image::getPixelSize(){
 	return 0;
 }
 
+/**
+ * Clona atributos, mas nao memoria
+ * @return objeto copiado
+ */
 Image* Image::partialClone(){
 	Image* copy = new Image(this->getRows(), this->getRows());
 	return copy;
 }
 
+/**
+ * Seta o tipo da imagem para ser escrita no arquivo
+ * @param type tipo do tipo char
+ */
 void Image::setType(char *type){
 	strcpy(this->type, type);
 }
@@ -186,7 +198,6 @@ Image(rows, columns){
 }
 
 grayImage::~grayImage(){
-
 }
 
 int grayImage::getPixelSize(){
@@ -216,7 +227,6 @@ Image(rows, columns){
 
 
 rgbImage::~rgbImage(){
-
 }
 	
 int rgbImage::getPixelSize(){
@@ -235,6 +245,11 @@ rgbImage* rgbImage::partialClone(){
 ///SUPPORT FUNCTIONS //
 ///////////////////////
 
+/**
+ * checa o tipo a partir do nome
+ * @param  name nome da imagem
+ * @return      tipo definido
+ */
 int getImageType(const char *name){
 
 	if(memcmp(GRAY_EXT, name + strlen(name)-4, 4*sizeof(char)) == 0){
@@ -246,6 +261,11 @@ int getImageType(const char *name){
 	return UNK_TYPE;
 }
 
+/**
+ * Cria uma classe certa a partir do tipo
+ * @param  type codigo do tipo
+ * @return subclasse
+ */
 Image* createImage(int type){
 	Image *buffer = NULL;
 	
@@ -258,6 +278,13 @@ Image* createImage(int type){
 	return buffer;
 }
 
+/**
+ * cria uma imagem com NLINHAS e NCOLUNAS
+ * @param  type tipo da imagem
+ * @param  rows linhas
+ * @param  cols colunas
+ * @return      nova imagem
+ */
 Image* createImage(int type, int rows, int cols){
 	Image *buffer = NULL;
 	

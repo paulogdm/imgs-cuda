@@ -10,7 +10,7 @@
 #include <cuda_runtime.h>
 
 //flag para executar o programa N vezes
-#define EXEC_N_TIMES	3
+#define EXEC_N_TIMES	2
 
 //flag para escrever a saida ou nao
 #define WRITE_IMAGE_OUT		/*!*/false

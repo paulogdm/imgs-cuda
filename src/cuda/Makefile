@@ -4,7 +4,7 @@ CC=g++
 CUDA_CC=nvcc
 INCLUDE_DIR=../cuda_include/
 FLAGS=-I$(INCLUDE_DIR)
-NVIDIA_FLAGS=-L/usr/local/cuda/lib64 -lcuda -lcudart -rdc=true -gencode arch=compute_30,code=sm_30 -arch compute_30 -code sm_30 -m 64
+NVIDIA_FLAGS=-L/usr/local/cuda/lib64 -lcuda -lcudart -rdc=true -gencode arch=compute_30,code=sm_30 -arch compute_30 -code sm_30 -m 64 -Xptxas=-dlcm=cg
 
 #File sources
 SOURCES= $(wildcard $(INCLUDE_DIR)*.cu) $(wildcard *.cu)
